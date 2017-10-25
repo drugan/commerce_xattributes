@@ -1,0 +1,8 @@
+name: Commerce Extended Attributes
+type: module
+description: Extends attributes administering options.
+core: 8.x
+package: Commerce (contrib)
+dependencies:
+  - commerce
+  - commerce_product

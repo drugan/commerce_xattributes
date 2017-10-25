@@ -1,0 +1,4 @@
+services:
+  commerce_xattributes.attribute_field_manager:
+    class: Drupal\commerce_xattributes\XattributesProductAttributeFieldManager
+    arguments: ['@entity_field.manager', '@entity_type.bundle.info', '@entity_type.manager', '@cache.data']

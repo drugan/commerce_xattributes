@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Contains commerce_xattributes.module.
+ */
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\commerce_xattributes\XattributesProductAttributeListBuilder;
+use Drupal\commerce_xattributes\Entity\XattributesProductAttribute;
+use Drupal\commerce_xattributes\Form\XattributesProductAttributeForm;
+use Drupal\commerce_xattributes\Form\XattributesProductVariationTypeForm;
+
+/**
+ * Implements hook_help().
+ */
+function commerce_xattributes_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the commerce_xattributes module.
+    case 'help.page.commerce_xattributes':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Extends attributes administering options.') . '</p>';
+
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function commerce_xattributes_entity_type_alter(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  $entity_keys = $entity_types["commerce_product_attribute"]->get('entity_keys');
+  $entity_keys['elementLabel'] = 'elementLabel';
+  $entity_types["commerce_product_attribute"]->set('entity_keys', $entity_keys);
+  $config_export = $entity_types["commerce_product_attribute"]->get('config_export');
+  $config_export[] = 'elementLabel';
+  $entity_types["commerce_product_attribute"]->set('config_export', $config_export);
+  $entity_types["commerce_product_attribute"]->setClass(XattributesProductAttribute::class);
+  $form = $entity_types["commerce_product_attribute"]->getHandlerClasses()['form'];
+  $form['add'] = XattributesProductAttributeForm::class;
+  $form['edit'] = XattributesProductAttributeForm::class;
+  $entity_types["commerce_product_attribute"]->setHandlerClass('form', $form);
+  $entity_types["commerce_product_attribute"]->setListBuilderClass(XattributesProductAttributeListBuilder::class);
+  $form = $entity_types["commerce_product_variation_type"]->getHandlerClasses()['form'];
+  $form['add'] = XattributesProductVariationTypeForm::class;
+  $form['edit'] = XattributesProductVariationTypeForm::class;
+  $entity_types["commerce_product_variation_type"]->setHandlerClass('form', $form);
+}
