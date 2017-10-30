@@ -1,0 +1,16 @@
+commerce_product.commerce_product_attribute.*:
+  type: config_entity
+  label: 'Product attribute'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    elementLabel:
+      type: label
+      label: 'Element label'
+    elementType:
+      type: string
+      label: 'Element type'

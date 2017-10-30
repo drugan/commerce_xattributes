@@ -4,28 +4,11 @@
  * @file
  * Contains commerce_xattributes.module.
  */
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\commerce_xattributes\XattributesProductAttributeListBuilder;
+
 use Drupal\commerce_xattributes\Entity\XattributesProductAttribute;
 use Drupal\commerce_xattributes\Form\XattributesProductAttributeForm;
+use Drupal\commerce_xattributes\XattributesProductAttributeListBuilder;
 use Drupal\commerce_xattributes\Form\XattributesProductVariationTypeForm;
-
-/**
- * Implements hook_help().
- */
-function commerce_xattributes_help($route_name, RouteMatchInterface $route_match) {
-  switch ($route_name) {
-    // Main module help for the commerce_xattributes module.
-    case 'help.page.commerce_xattributes':
-      $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('Extends attributes administering options.') . '</p>';
-
-      return $output;
-
-    default:
-  }
-}
 
 /**
  * Implements hook_entity_type_alter().

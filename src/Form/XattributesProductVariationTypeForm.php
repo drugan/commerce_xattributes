@@ -2,25 +2,24 @@
 
 namespace Drupal\commerce_xattributes\Form;
 
-use Drupal\language\Entity\ContentLanguageSettings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\commerce\EntityHelper;
 use Drupal\commerce\EntityTraitManagerInterface;
-use Drupal\commerce\Form\CommerceBundleEntityFormBase;
 use Drupal\commerce_product\Form\ProductVariationTypeForm;
 use Drupal\commerce_product\ProductAttributeFieldManagerInterface;
 
+/**
+ * Extend attribute type labels on a variation type edit form.
+ *
+ * Builds two component clickable labels, one is for the current variation type
+ * referenced attribute field and another for the attribute edit pages.
+ */
 class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
 
   /**
-   * Constructs a new ProductVariationTypeForm object.
+   * {@inheritdoc}
    *
-   * @param \Drupal\commerce\EntityTraitManagerInterface $trait_manager
-   *   The entity trait manager.
-   * @param \Drupal\commerce_product\ProductAttributeFieldManagerInterface $attribute_field_manager
-   *   The attribute field manager.
+   * The __construct() uses different $attribute_field_manager object.
    */
   public function __construct(EntityTraitManagerInterface $trait_manager, ProductAttributeFieldManagerInterface $attribute_field_manager) {
     parent::__construct($trait_manager, $attribute_field_manager);
@@ -35,8 +34,6 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
       $container->get('commerce_xattributes.attribute_field_manager')
     );
   }
-
-
 
   /**
    * {@inheritdoc}
@@ -68,18 +65,32 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
 
       if (isset($attribute_field[$id])) {
         $label = $definitions[$attribute_field[$id]]->label();
-        $label = $this->t('<a href=":href" target="_blank">%label</a>', ['%label' => $label, ':href' => $path . $attribute_field[$id]]);
+        // Link referenced attribute field label to the field edit page.
+        $label = $this->t('<a href=":href" target="_blank">%label</a>', [
+          '%label' => $label,
+          ':href' => $path . $attribute_field[$id],
+        ]);
 
-        return $label . ' => ' . $this->t('<a href=":href" target="_blank">@id</a>', [':href' => $url, '@id' => $id]);
+        return $label . ' => ' . $this->t('<a href=":href" target="_blank">@id</a>', [
+          ':href' => $url,
+          '@id' => $id,
+        ]);
       }
 
-      return $this->t('%label => <a href=":href" target="_blank">@id</a>', ['%label' => $label, ':href' => $url, '@id' => $id]);
+      // Attributes not referenced by the variation type presented as an
+      // attribute non-clickable admin name (%label).
+      return $this->t('%label => <a href=":href" target="_blank">@id</a>', [
+        '%label' => $label,
+        ':href' => $url,
+        '@id' => $id,
+      ]);
     }, $attributes);
 
     if ($attributes_options) {
       $options = [];
       if (!empty($form['attributes']['#default_value'])) {
         foreach ($attributes_options as $key => $value) {
+          // Move attributes referenced by the variation type to the top.
           if (in_array($key, $form['attributes']['#default_value'])) {
             $options = [$key => $value] + $options;
           }

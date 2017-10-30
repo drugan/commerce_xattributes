@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Install and uninstall functions for the commerce_xattributes module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function commerce_xattributes_uninstall() {
+  // Make some clean up after ourselves.
+  $config = \Drupal::configFactory();
+  $attributes = $config->listAll('commerce_product.commerce_product_attribute.');
+
+  foreach ($attributes as $name) {
+    $attribute = $config->getEditable($name);
+    if ($attribute->get('elementLabel') !== NULL) {
+      $attribute->clear('elementLabel');
+      $attribute->save();
+    }
+  }
+}

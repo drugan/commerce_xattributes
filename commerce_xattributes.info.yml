@@ -6,3 +6,4 @@ package: Commerce (contrib)
 dependencies:
   - commerce
   - commerce_product
+  - readmehelp

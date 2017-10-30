@@ -15,16 +15,7 @@ use Drupal\commerce_product\Entity\ProductAttributeInterface;
 class XattributesProductAttributeFieldManager extends ProductAttributeFieldManager {
 
   /**
-   * Constructs a new ProductAttributeFieldManager object.
-   *
-   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
-   *   The entity field manager.
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
-   *   The entity type bundle info.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The cache backend.
+   * {@inheritdoc}
    */
   public function __construct(EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info, EntityTypeManagerInterface $entity_type_manager, CacheBackendInterface $cache) {
     $this->entityFieldManager = $entity_field_manager;

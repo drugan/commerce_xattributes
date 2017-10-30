@@ -5,6 +5,9 @@ namespace Drupal\commerce_xattributes\Form;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Form\ProductAttributeForm;
 
+/**
+ * Adds element label field to the ProductAttributeForm::form().
+ */
 class XattributesProductAttributeForm extends ProductAttributeForm {
 
   /**
