@@ -22,9 +22,9 @@ then the ID should start with a number: *0_my_attribute*, *1_my_attribute*,
 *a_my_attribute*, *b_my_attribute*, etc.
 
 If customer facing *Label* is not set then the attribute name is used for this
-purpose when adding this attribute to a variation type. Could be overriden later
-on the variation type attribute's edit form. The *Label* also might be used as a
-helper to distinguish attributes on admin pages. Set up *Label*:
+purpose when adding this attribute to a variation type. Could be overridden
+later on the variation type attribute's edit form. The *Label* also might be
+used as a helper to distinguish attributes on admin pages. Set up *Label*:
 
 ![Set up label](images/add-attribute-label.png "Set up label")
 
@@ -33,7 +33,7 @@ linked to the attribute edit page. After saving an attribute on a variation type
 customer facing labels at the left turned into links to a variation type
 attribute's edit page. All saved attributes are forcibly placed at the top of a
 list of attributes. Note that in the example below default labels for attributes
-are overriden:
+are overridden:
 
 ![Variation type attributes](images/product-variation-attributes.png
 "Variation type attributes")
