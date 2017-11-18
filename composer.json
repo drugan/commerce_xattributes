@@ -17,5 +17,7 @@
     "issues": "https://github.com/drugan/commerce_xattributes/issues",
     "source": "https://github.com/drugan/commerce_xattributes"
   },
-  "require": { }
+  "require": {
+        "drupal/readmehelp": "dev-1.x"
+  }
 }
