@@ -18,6 +18,8 @@
     "source": "https://github.com/drugan/commerce_xattributes"
   },
   "require": {
+        "drupal/commerce": "*",
+        "drupal/commerce_product": "*",
         "drupal/readmehelp": "dev-1.x"
   }
 }
