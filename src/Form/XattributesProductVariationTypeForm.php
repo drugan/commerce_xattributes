@@ -4,9 +4,7 @@ namespace Drupal\commerce_xattributes\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\commerce\EntityTraitManagerInterface;
 use Drupal\commerce_product\Form\ProductVariationTypeForm;
-use Drupal\commerce_product\ProductAttributeFieldManagerInterface;
 
 /**
  * Extend attribute type labels on a variation type edit form.
@@ -15,15 +13,6 @@ use Drupal\commerce_product\ProductAttributeFieldManagerInterface;
  * referenced attribute field and another for the attribute edit pages.
  */
 class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
-
-  /**
-   * {@inheritdoc}
-   *
-   * The __construct() uses different $attribute_field_manager object.
-   */
-  public function __construct(EntityTraitManagerInterface $trait_manager, ProductAttributeFieldManagerInterface $attribute_field_manager) {
-    parent::__construct($trait_manager, $attribute_field_manager);
-  }
 
   /**
    * {@inheritdoc}
