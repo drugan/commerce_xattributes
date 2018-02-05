@@ -2,10 +2,6 @@
 
 namespace Drupal\commerce_xattributes;
 
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\commerce_product\ProductAttributeFieldManager;
 use Drupal\commerce_product\Entity\ProductAttributeInterface;
 
@@ -17,11 +13,34 @@ class XattributesProductAttributeFieldManager extends ProductAttributeFieldManag
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info, EntityTypeManagerInterface $entity_type_manager, CacheBackendInterface $cache) {
-    $this->entityFieldManager = $entity_field_manager;
-    $this->entityTypeBundleInfo = $entity_type_bundle_info;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->cache = $cache;
+  protected function buildFieldMap() {
+    $field_map = [];
+    $bundle_info = $this->entityTypeBundleInfo->getBundleInfo('commerce_product_variation');
+    foreach (array_keys($bundle_info) as $bundle) {
+      /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $form_display */
+      $form_display = commerce_get_entity_display('commerce_product_variation', $bundle, 'form');
+      foreach ($this->getFieldDefinitions($bundle) as $field_name => $definition) {
+        $handler_settings = $definition->getSetting('handler_settings');
+        $component = $form_display->getComponent($field_name);
+        foreach ($handler_settings['target_bundles'] as $target_bundle) {
+          $field_map[$bundle][] = [
+            'attribute_id' => $target_bundle,
+            'field_name' => $field_name,
+            'weight' => $component ? $component['weight'] : 0,
+          ];
+        }
+      }
+
+      if (!empty($field_map[$bundle])) {
+        uasort($field_map[$bundle], ['\Drupal\Component\Utility\SortArray', 'sortByWeightElement']);
+        // Remove the weight keys to reduce the size of the cached field map.
+        $field_map[$bundle] = array_map(function ($map) {
+          return array_diff_key($map, ['weight' => '']);
+        }, $field_map[$bundle]);
+      }
+    }
+
+    return $field_map;
   }
 
   /**

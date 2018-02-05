@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Contains commerce_cattributes.module.
+ */
+
+use Drupal\commerce_cattributes\Plugin\Field\FieldWidget\CorrectProductVariationAttributesWidget;
+use Drupal\commerce_cattributes\Plugin\Field\FieldWidget\CorrectProductVariationTitleWidget;
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function commerce_cattributes_field_widget_info_alter(array &$info) {
+  $info['commerce_product_variation_title']['class'] = CorrectProductVariationTitleWidget::class;
+  $info['commerce_product_variation_attributes']['class'] = CorrectProductVariationAttributesWidget::class;
+}

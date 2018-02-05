@@ -19,5 +19,9 @@
   },
   "require": {
         "drupal/readmehelp": "^1.0"
+  },
+  "suggest": {
+    "drupal/commerce_bulk": "Provides a service for bulk creation of Drupal Commerce entities. Reqiured by the Commerce Combined Attributes submodule.",
+    "drupal/commerce_xquantity": "Allows to set quantity field's default_value, step, min, max, prefix and suffix on a form display widget. Also, helps to avoid incorrectly chosen attribute errors on a page with multiple \"Add to cart\" forms."
   }
 }

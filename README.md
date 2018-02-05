@@ -1,11 +1,31 @@
 Commerce Extended Attributes
 ============================
 
+Helps to administer Drupal Commerce 2.x product attributes. You may need it if the set up on your Drupal Commerce site requires creation of a great number of attributes. Also,
+the [Commerce Correct Attributes ↗](https://github.com/drugan/commerce_xattributes/tree/8.x-1.x/modules/commerce_cattributes)
+submodule can be used to add combined attributes feature and fix some attribute related issues.
+
+> Tip: you can see this file in your browser by clicking
+the [admin/help#](#0 "? Help") link at the right of the *Admin toolbar* and then
+the [admin/help/commerce_xattributes#](#0 "Commerce Extended Attributes") link
+in the list.
+
+________________________________________________________________________________
+
+- [admin/help/commerce_xattributes#setup](#setup "Setup")
+- [admin/help/commerce_xattributes#todo](#todo "TODO")
+- [admin/help/commerce_xattributes#module-author](#module-author "Module author")
+- [Commerce Extended Attributes on drupal.org ↗](https://www.drupal.org/project/commerce_xattributes)
+- [Commerce Extended Attributes on github.com ↗](https://github.com/drugan/commerce_xattributes)
+
+________________________________________________________________________________
+
+
 ## Setup
 
 After installing the module go
-to **[admin/commerce/product-attributes](#admin-commerce-attributes
-"Admin link")** and check your existing attributes:
+to [admin/commerce/product-attributes](#admin-commerce-attributes
+"Admin link") and check your existing attributes:
 
 ![Product attributes overview](images/product-attributes-overview.png
 "Product attributes overview")
@@ -38,9 +58,13 @@ are overridden:
 ![Variation type attributes](images/product-variation-attributes.png
 "Variation type attributes")
 
+## TODO
+
+- Allow attribute values to set price adjustments (percentage, amount, etc..).
+
 ###### Module author:
 ```
-  Vladimir Proshin (drugan)
+  Vlad Proshin (drugan)
   [proshins@gmail.com](proshins@gmail.com)
   [https://drupal.org/u/drugan](https://drupal.org/u/drugan)
 ```

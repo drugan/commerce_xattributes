@@ -2,7 +2,6 @@
 
 namespace Drupal\commerce_xattributes\Form;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Form\ProductVariationTypeForm;
 
@@ -13,16 +12,6 @@ use Drupal\commerce_product\Form\ProductVariationTypeForm;
  * referenced attribute field and another for the attribute edit pages.
  */
 class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('plugin.manager.commerce_entity_trait'),
-      $container->get('commerce_xattributes.attribute_field_manager')
-    );
-  }
 
   /**
    * {@inheritdoc}
@@ -95,6 +84,14 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
     }
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state) {
+    parent::save($form, $form_state);
+    $form_state->setRedirect('entity.commerce_product_variation_type.edit_form', ['commerce_product_variation_type' => $this->entity->id()]);
   }
 
 }

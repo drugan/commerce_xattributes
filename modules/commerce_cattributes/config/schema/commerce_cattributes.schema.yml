@@ -1,0 +1,19 @@
+field.widget.settings.commerce_cattributes_select:
+  type: mapping
+  label: 'Commerce Correct Attributes widget settings'
+  mapping:
+    skip_option_label:
+      type: label
+      label: 'Refuse option label'
+    reorder_labels:
+      type: boolean
+      label: 'Reorder options after making choice'
+    no_options_label:
+      type: label
+      label: 'No options available label'
+    hide_no_options:
+      type: boolean
+      label: 'Hide the attribute if no options available'
+    show_optgroups_labels:
+      type: boolean
+      label: 'Show optgroups labels in the attribute select list'
