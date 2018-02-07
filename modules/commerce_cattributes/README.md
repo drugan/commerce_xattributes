@@ -32,6 +32,7 @@ ________________________________________________________________________________
 
 - [admin/help/commerce_cattributes#setup](#setup "Setup")
 - [admin/help/commerce_cattributes#combined-attributes](#combined-attributes "Combined attributes")
+- [admin/help/commerce_cattributes#combined-attributes-result](#combined-attributes-result "Combined attributes result")
 - [admin/help/commerce_cattributes#module-author](#module-author "Module author")
 
 ## Setup
@@ -182,7 +183,8 @@ point to the different attributes.
 
 ________________________________________________________________________________
 
-See how the combined attributes' field looks like on the *Add to cart* form.
+
+### Combined attributes result
 
 ![Optgroups](images/optgroups.png "Optgroups")
 
