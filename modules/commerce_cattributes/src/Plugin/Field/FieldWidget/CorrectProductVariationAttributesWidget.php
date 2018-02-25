@@ -37,11 +37,15 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
   protected $cartManager;
 
   /**
-   * The temporary substitution for the attribute '_none' value.   * .
+   * The temporary substitution for the attribute '_none' value.
    *
-   * @var string|int
+   * The '0.0' instead of '0' value is taken because when the '_none' option is
+   * the only in array of options then it is rendered as $options['Empty label']
+   * but with '0.0' it looks like $options['0.0' => 'Empty label'].
+   *
+   * @var string|float
    */
-  protected $noneId = '0';
+  protected $noneId = '0.0';
 
   /**
    * The product variation bulk creator.
@@ -419,7 +423,7 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
         'title' => $field_definitions[$field_name]->getLabel(),
         'required' => $field_definitions[$field_name]->isRequired(),
         'element_type' => $type,
-        'default_value' => $type != 'select' && $field_id == '_none' ? $none_id : $field_id,
+        'default_value' => $field_id == '_none' ? $none_id : $field_id,
       ];
       unset($field_definitions[$field_name]);
       // The first attribute gets all values. Every next attribute gets only
