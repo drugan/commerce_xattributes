@@ -308,7 +308,10 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
         }, $user_input['attributes']);
 
         foreach ($user_input['all'] as $index => $combination) {
-          if ($combination[$trigger_name] != $trigger_value) {
+          // For some reasons the first view of the first product on a newly
+          // installed site throw a fatal error because $trigger_name === FALSE.
+          // @see https://www.drupal.org/project/commerce_xattributes/issues/2956665
+          if (!$trigger_name || ($combination[$trigger_name] != $trigger_value)) {
             unset($user_input['all'][$index]);
           }
           else {
