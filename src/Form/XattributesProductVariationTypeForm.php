@@ -18,7 +18,6 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
-
     /** @var \Drupal\commerce_product\Entity\ProductVariationTypeInterface $variation_type */
     $variation_type = $this->entity;
     $used_attributes = $attribute_field = [];
@@ -28,8 +27,7 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
       $used_attributes = array_column($attribute_map, 'attribute_id');
       if (!empty($used_attributes)) {
         $attribute_field = array_combine($used_attributes, array_column($attribute_map, 'field_name'));
-        $bundle = $variation_type->getEntityType()->getBundleOf();
-        $path = $this->getDestinationArray()['destination'] . "/fields/{$bundle}.{$variation_type->id()}.";
+        $path = "{$variation_type->url()}/fields/";
         $definitions = $this->attributeFieldManager->getFieldDefinitions($variation_type->id());
       }
     }
@@ -45,7 +43,7 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
         // Link referenced attribute field label to the field edit page.
         $label = $this->t('<a href=":href" target="_blank">%label</a> <mark>%required</mark>', [
           '%label' => $definitions[$attribute_field[$id]]->label(),
-          ':href' => $path . $attribute_field[$id],
+          ':href' => $path . $definitions[$attribute_field[$id]]->id(),
           '%required' => $definitions[$attribute_field[$id]]->isRequired() ? '*' : '',
         ]);
 
