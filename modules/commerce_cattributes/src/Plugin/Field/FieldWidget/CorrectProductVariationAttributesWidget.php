@@ -257,6 +257,7 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
     $product = $form_state->get('product');
     $variations = $this->variationStorage->loadEnabled($product);
     $all = [];
+    $all['all'] = NULL;
     $trigger = NULL;
     if (count($variations) > 1 && ($trigger = $form_state->getTriggeringElement())) {
       $any = $this->creator->getUsedAttributesCombinations($variations);
