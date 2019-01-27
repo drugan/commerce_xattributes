@@ -127,7 +127,7 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
     $base_id = $form_object->getBaseFormId();
     $form_id = $form_object->getFormId();
     // To reduce the attribute '#id' cut out base form ID from the form ID.
-    $id = strtr($form_id, [$base_id => '']);
+    $id = Html::getClass(strtr($form_id, [$base_id => '']));
 
     $form_object->wrapperId = $wrapper_id = Html::getClass($form_id);
     $form_state->setFormObject($form_object);

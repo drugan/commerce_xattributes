@@ -13,12 +13,15 @@ use Drupal\Core\Form\FormStateInterface;
  * Implements  hook_form_BASE_FORM_ID_alter().
  */
 function commerce_cattributes_form_commerce_order_item_add_to_cart_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (!isset($form['#wrapper_id']) && ($wrapper_id = $form_state->getFormObject()->wrapperId)) {
-    $form += [
-      '#wrapper_id' => $wrapper_id,
-      '#prefix' => '<div id="' . $wrapper_id . '">',
-      '#suffix' => '</div>',
-    ];
+  if (!isset($form['#wrapper_id'])) {
+    if (($add_to_cart_form = $form_state->getFormObject()) && property_exists($add_to_cart_form, 'wrapperId')) {
+      $wrapper_id = $add_to_cart_form->wrapperId;
+      $form += [
+        '#wrapper_id' => $wrapper_id,
+        '#prefix' => '<div id="' . $wrapper_id . '">',
+        '#suffix' => '</div>',
+      ];
+    }
   }
 }
 

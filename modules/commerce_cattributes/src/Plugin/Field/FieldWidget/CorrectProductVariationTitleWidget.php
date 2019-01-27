@@ -9,11 +9,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Plugin\Field\FieldWidget\ProductVariationTitleWidget;
 
 /**
- * Plugin implementation of the 'commerce_product_variation_title' widget.
+ * Overrides the 'commerce_product_variation_title' widget.
  *
  * @FieldWidget(
  *   id = "commerce_product_variation_title",
- *   label = @Translation("Product variation title"),
+ *   label = @Translation("Correct Product variation title"),
  *   field_types = {
  *     "entity_reference"
  *   }
@@ -25,6 +25,20 @@ class CorrectProductVariationTitleWidget extends ProductVariationTitleWidget {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    $form_object = $form_state->getFormObject();
+    $base_id = $form_object->getBaseFormId();
+    $form_id = $form_object->getFormId();
+    // To reduce the attribute '#id' cut out base form ID from the form ID.
+    $id = Html::getClass(strtr($form_id, [$base_id => '']));
+
+    $form_object->wrapperId = $wrapper_id = Html::getClass($form_id);
+    $form_state->setFormObject($form_object);
+    $form += [
+      '#wrapper_id' => $wrapper_id,
+      '#prefix' => '<div id="' . $wrapper_id . '">',
+      '#suffix' => '</div>',
+    ];
+
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
     $product = $form_state->get('product');
     $variations = $this->loadEnabledVariations($product);
@@ -47,13 +61,6 @@ class CorrectProductVariationTitleWidget extends ProductVariationTitleWidget {
       return $element;
     }
 
-    // Build the variation options form.
-    $wrapper_id = Html::getUniqueId('commerce-product-add-to-cart-form');
-    $form += [
-      '#wrapper_id' => $wrapper_id,
-      '#prefix' => '<div id="' . $wrapper_id . '">',
-      '#suffix' => '</div>',
-    ];
     if ($form_state->isRebuilding()) {
       $parents = array_merge($element['#field_parents'], [$items->getName(), $delta]);
       $user_input = (array) NestedArray::getValue($form_state->getUserInput(), $parents);
@@ -73,9 +80,6 @@ class CorrectProductVariationTitleWidget extends ProductVariationTitleWidget {
     foreach ($variations as $option) {
       $variation_options[$option->id()] = $option->label();
     }
-    // To reduce the ID cut out base form ID from the form ID.
-    $base_id = $form_state->getFormObject()->getBaseFormId();
-    $id = Html::getClass(strtr($form_state->getFormObject()->getFormId(), [$base_id => '']));
     $element['variation'] = [
       '#id' => "edit-purchased-entity-0{$id}",
       '#type' => 'select',
