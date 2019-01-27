@@ -17,11 +17,11 @@ use Drupal\commerce_product\Plugin\Field\FieldWidget\ProductVariationWidgetBase;
 use Drupal\commerce_cart\CartManagerInterface;
 
 /**
- * Plugin implementation of the 'commerce_product_variation_attributes' widget.
+ * Overrides the 'commerce_product_variation_attributes' widget.
  *
  * @FieldWidget(
  *   id = "commerce_product_variation_attributes",
- *   label = @Translation("Product variation attributes"),
+ *   label = @Translation("Correct product variation attributes"),
  *   field_types = {
  *     "entity_reference"
  *   }
@@ -123,6 +123,20 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    $form_object = $form_state->getFormObject();
+    $base_id = $form_object->getBaseFormId();
+    $form_id = $form_object->getFormId();
+    // To reduce the attribute '#id' cut out base form ID from the form ID.
+    $id = strtr($form_id, [$base_id => '']);
+
+    $form_object->wrapperId = $wrapper_id = Html::getClass($form_id);
+    $form_state->setFormObject($form_object);
+    $form += [
+      '#wrapper_id' => $wrapper_id,
+      '#prefix' => '<div id="' . $wrapper_id . '">',
+      '#suffix' => '</div>',
+    ];
+
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
     $product = $form_state->get('product');
     $variations = $this->loadEnabledVariations($product);
@@ -149,14 +163,6 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
         return $element;
       }
     }
-
-    // Build the full attribute form.
-    $wrapper_id = Html::getUniqueId('commerce-product-add-to-cart-form');
-    $form += [
-      '#wrapper_id' => $wrapper_id,
-      '#prefix' => '<div id="' . $wrapper_id . '">',
-      '#suffix' => '</div>',
-    ];
 
     // If selected variation is already found in self->massageFormValues().
     if ($selected_variation = $form_state->getValue('selected_variation')) {
@@ -193,9 +199,7 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
         'class' => ['attribute-widgets'],
       ],
     ];
-    // To reduce the ID cut out base form ID from the form ID.
-    $base_id = $form_state->getFormObject()->getBaseFormId();
-    $id = strtr($form_state->getFormObject()->getFormId(), [$base_id => '']);
+
     foreach ($this->getAttributeInfo($selected_variation, $variations) as $field_name => $attribute) {
       $element['attributes'][$field_name] = [
         '#id' => 'edit-purchased-entity-0-attributes-' . Html::getClass($field_name . $id),
@@ -240,8 +244,9 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
       if (empty($element['attributes'][$field_name]['#options'])) {
         $element['attributes'][$field_name]['#access'] = FALSE;
       }
-      // The '#empty_value' is 'No, thanks!' value. Needs testing.
+      // The '#empty_value' is 'No, thanks!' value.
       if (!isset($element['attributes'][$field_name]['#empty_value'])) {
+        // TODO: decide what we should to do in this case.
         // $element['attributes'][$field_name]['#required'] = TRUE;.
       }
     }
@@ -391,10 +396,15 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
     $settings['hide_no_options'] = FALSE;
     $settings['reorder_labels'] = TRUE;
     $order_item = $this->cartManager->createOrderItem($selected_variation);
-    // Try to fetch "Correct attributes select list" widget settings from the
+    // "Correct product variation attributes" widget settings.
+    $form_display = entity_get_form_display($order_item->getEntityTypeId(), $order_item->bundle(), 'add_to_cart');
+    if (($purchased_entity = $form_display->getComponent('purchased_entity')) && !empty($purchased_entity['settings']['skip_option_label'])) {
+      $settings = $purchased_entity['settings'] + $settings;
+    }
+    // Try to fetch "Correct attributes default" widget settings from the
     // variation type's order item default form display mode.
-    $form_display = entity_get_form_display($order_item->getEntityTypeId(), $order_item->bundle(), 'default');
-    if (($purchased_entity = $form_display->getComponent('purchased_entity')) && isset($purchased_entity['settings'])) {
+    // TODO: remove this after a while.
+    elseif (($form_display = entity_get_form_display($order_item->getEntityTypeId(), $order_item->bundle(), 'default')) && ($purchased_entity = $form_display->getComponent('purchased_entity')) && !empty($purchased_entity['settings'])) {
       $settings = $purchased_entity['settings'] + $settings;
     }
     // The id of an empty option.
@@ -495,36 +505,85 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
   }
 
   /**
-   * Gets the attribute values of a given set of variations.
-   *
-   * The commerce_cattributes module does not use this method but keeps it there
-   * for other modules.
-   *
-   * @param \Drupal\commerce_product\Entity\ProductVariationInterface[] $variations
-   *   The variations.
-   * @param string $field_name
-   *   The field name of the attribute.
-   * @param callable|null $callback
-   *   An optional callback to use for filtering the list.
-   *
-   * @return array[]
-   *   The attribute values, keyed by attribute ID.
+   * {@inheritdoc}
    */
-  protected function getAttributeValues(array $variations, $field_name, callable $callback = NULL) {
-    $values = [];
-    foreach ($variations as $variation) {
-      if (is_null($callback) || call_user_func($callback, $variation)) {
-        $attribute_value = $variation->getAttributeValue($field_name);
-        if ($attribute_value) {
-          $values[$attribute_value->id()] = $attribute_value->label();
-        }
-        else {
-          $values['_none'] = '';
-        }
-      }
+  public static function defaultSettings() {
+    return [
+      'skip_option_label' => t('No, thanks!'),
+      'reorder_labels' => '1',
+      'no_options_label' => t('No options available ...'),
+      'hide_no_options' => '0',
+      'show_optgroups_labels' => '0',
+    ] + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm(array $form, FormStateInterface $form_state) {
+    $settings = $this->getSettings();
+    $warning = $this->t('Leaving this field empty is not recommended.');
+
+    $element['skip_option_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Skip option label'),
+      '#default_value' => $settings['skip_option_label'],
+      '#description' => $this->t('Indicates for a user that choosing this option will totally skip an optional field.'),
+      '#placeholder' => $warning,
+    ];
+    $element['reorder_labels'] = [
+      '#type' => 'checkbox',
+      '#title_display' => 'before',
+      '#title' => $this->t('Reorder Labels'),
+      '#description' => $this->t('You may uncheck this box if all (or almost all) variations on a product are going to be created. If checked, the element labels will be reordered each time after choosing another option on an attribute. That introduces UX issue but helps to avoid adding wrong variation to a cart or even system crash on the complex attributes use cases. See more: <a href=":href">Incorrect display of attribute field values on the Add To Cart form</a>', [':href' => 'https://www.drupal.org/node/2707721']),
+      '#default_value' => $settings['reorder_labels'],
+    ];
+    $element['hide_no_options'] = [
+      '#type' => 'checkbox',
+      '#title_display' => 'before',
+      '#title' => $this->t('Hide empty field'),
+      '#description' => $this->t('If checked, the element having only one empty option will be hidden. Not recommended. Instead set up an explanatory No options label below.'),
+      '#default_value' => $settings['hide_no_options'],
+    ];
+    $element['no_options_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('No options label'),
+      '#default_value' => $settings['no_options_label'],
+      '#description' => $this->t('Indicates for a user that there is no options to choose from on an optional field.'),
+      '#placeholder' => $warning,
+      '#states' => [
+        'visible' => [':input[name*="hide_no_options"]' => ['checked' => FALSE]],
+      ],
+    ];
+    $element['show_optgroups_labels'] = [
+      '#type' => 'checkbox',
+      '#title_display' => 'before',
+      '#title' => $this->t('Show option groups labels'),
+      '#description' => $this->t('If the element options combined from multiple option groups, then a label for each group will be shown above its options in the dropdown list.'),
+      '#default_value' => $settings['show_optgroups_labels'],
+    ];
+
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary() {
+    $summary = [];
+    $none = $this->t('None');
+    $yes = $this->t('Yes');
+    $settings = $this->getSettings();
+    $settings['reorder_labels'] = $settings['reorder_labels'] ? $yes : $none;
+    $hidden = $settings['hide_no_options'];
+    $settings['hide_no_options'] = $hidden ? $this->t('Hidden') : $this->t('Not hidden');
+    $settings['no_options_label'] = $hidden ? '' : $settings['no_options_label'];
+    foreach ($settings as $name => $value) {
+      $value = empty($settings[$name]) ? $none : $value;
+      $summary[] = "{$name}: {$value}";
     }
 
-    return $values;
+    return $summary;
   }
 
 }

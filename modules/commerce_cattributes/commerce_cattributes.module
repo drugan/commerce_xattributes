@@ -7,6 +7,20 @@
 
 use Drupal\commerce_cattributes\Plugin\Field\FieldWidget\CorrectProductVariationAttributesWidget;
 use Drupal\commerce_cattributes\Plugin\Field\FieldWidget\CorrectProductVariationTitleWidget;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements  hook_form_BASE_FORM_ID_alter().
+ */
+function commerce_cattributes_form_commerce_order_item_add_to_cart_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (!isset($form['#wrapper_id']) && ($wrapper_id = $form_state->getFormObject()->wrapperId)) {
+    $form += [
+      '#wrapper_id' => $wrapper_id,
+      '#prefix' => '<div id="' . $wrapper_id . '">',
+      '#suffix' => '</div>',
+    ];
+  }
+}
 
 /**
  * Implements hook_field_widget_info_alter().

@@ -12,7 +12,7 @@ use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsSelectWidget;
  *
  * @FieldWidget(
  *   id = "commerce_cattributes_select",
- *   label = @Translation("Correct attributes select list"),
+ *   label = @Translation("Deprecated Correct attributes select list"),
  *   field_types = {
  *     "entity_reference",
  *     "list_integer",
@@ -66,6 +66,10 @@ class CorrectOptionsSelectWidget extends OptionsSelectWidget {
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
+    $element['warning'] = [
+      '#type' => 'markup',
+      '#markup' => "<h1><mark>THIS WIDGET IS GOING TO BE DEPRECATED!</mark></h1> Instead, use the <em>(Correct) Product variation attributes</em> of an order item type widget on the <em>Add to cart</em> form display mode. For the <em>Default</em> form display mode of the same order item type it is recommended to use the <em>Select list</em> widget." ,
+    ];
     $settings = $this->getSettings();
     $warning = $this->t('Leaving this field empty is not recommended.');
 
@@ -116,6 +120,7 @@ class CorrectOptionsSelectWidget extends OptionsSelectWidget {
    */
   public function settingsSummary() {
     $summary = [];
+    $summary['deprecated'] = 'DEPRECATED!!!';
     $none = $this->t('None');
     $yes = $this->t('Yes');
     $settings = $this->getSettings();

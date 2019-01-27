@@ -12,6 +12,10 @@ the [admin/help#](#0 "? Help") link at the right of the *Admin toolbar* and then
 the [admin/help/commerce_cattributes#](#0 "Commerce Correct Attributes") link in
 the list.
 
+## The Base Module
+
+- [Commerce Extended Attributes on drupal.org ↗](https://www.drupal.org/project/commerce_xattributes)
+- [Commerce Extended Attributes on github.com ↗](https://github.com/drugan/commerce_xattributes)
 
 The module was created as a solution for the following *Drupal Commerce* issues:
 
@@ -38,16 +42,16 @@ ________________________________________________________________________________
 ## Setup
 
 After installing the module go to an order item
-type's *Manage form display* -> *Default* page and set
-the *Correct attributes select list* widget for the *Purchased entity* field. As
-an example the [admin/commerce/config/order-item-types/default/edit/form-display#](#0
-"default order item type") is taken but actually could be any type. Note that if
-the widget is not assigned the default settings will apply.
+type's *Manage form display* -> *Add to cart* page and set
+the (Correct) *Product variation attributes* widget for
+the *Purchased entity* field. As an example
+the [admin/commerce/config/order-item-types/default/edit/form-display/add_to_cart#](#0
+"default order item type") is taken but actually could be any type.
 
-![Correct attributes select list](images/correct-attributes-select-list-widget.png
-"Correct attributes select list")
+![Correct Product variation attributes](images/correct-product-variation-attributes.png
+"Correct Product variation attributes")
 
-The *Correct attributes select list* widget settings' summary explained:
+The (Correct) *Product variation attributes* widget settings' summary explained:
 
 - **skip_option_label:** The label for optional attribute fields' refuse option
 on an *Add to cart* form. For example, you may sell t-shirts with optional logo
