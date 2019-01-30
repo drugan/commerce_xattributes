@@ -222,25 +222,9 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
         unset($element['attributes'][$field_name]['#options']['_none']);
       }
       // 1 required value -> Disable the element to skip unneeded ajax calls.
-      if ($attribute['required'] && count($attribute['values']) === 1) {
-        $element['attributes'][$field_name]['#disabled'] = TRUE;
-        // Support for option values keyed by just one optgroup label which may
-        // have multiple values.
-        $count = 1;
-        foreach ($attribute['values'] as $value) {
-          $counted = count($value);
-          if (($counted > 1) || ($count > 1)) {
-            $element['attributes'][$field_name]['#disabled'] = FALSE;
-            break;
-          }
-          elseif ($counted === 1) {
-            $count++;
-          }
-        }
-      }
+      // REMOVED: @see https://www.drupal.org/project/commerce/issues/3020173
       // Optimize the UX of optional attributes:
       // - Hide attributes that have no values.
-      // - Require attributes that have a value on each variation.
       if (empty($element['attributes'][$field_name]['#options'])) {
         $element['attributes'][$field_name]['#access'] = FALSE;
       }
