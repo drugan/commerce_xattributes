@@ -15,6 +15,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\commerce_product\Plugin\Field\FieldWidget\ProductVariationWidgetBase;
 use Drupal\commerce_cart\CartManagerInterface;
+use Drupal\commerce_order\Entity\OrderItemInterface;
 
 /**
  * Overrides the 'commerce_product_variation_attributes' widget.
@@ -138,7 +139,14 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
     ];
 
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    $product = $form_state->get('product');
+    if (!($product = $form_state->get('product')) && isset($form['#entity']) && $form['#entity'] instanceof OrderItemInterface) {
+      if (($purchased_entity = $form['#entity']->getPurchasedEntity())) {
+        if (!$product = $purchased_entity->getProduct()) {
+          return;
+        }
+        $form_state->set('product', $product);
+      }
+    }
     $variations = $this->loadEnabledVariations($product);
     if (count($variations) === 0) {
       // Nothing to purchase, tell the parent form to hide itself.
