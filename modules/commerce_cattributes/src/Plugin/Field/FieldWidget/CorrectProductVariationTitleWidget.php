@@ -41,13 +41,14 @@ class CorrectProductVariationTitleWidget extends ProductVariationTitleWidget {
     ];
 
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    if (!($product = $form_state->get('product'))
-      || !isset($form['#entity'])
-      || !($form['#entity'] instanceof OrderItemInterface)
-      || !($purchased_entity = $form['#entity']->getPurchasedEntity())
-      || !($product = $purchased_entity->getProduct())
-    ) {
-      return;
+    if (!($product = $form_state->get('product'))) {
+      if (!isset($form['#entity'])
+        || !($form['#entity'] instanceof OrderItemInterface)
+        || !($purchased_entity = $form['#entity']->getPurchasedEntity())
+        || !($product = $purchased_entity->getProduct())
+      ) {
+        return;
+      }
     }
     else {
       $form_state->set('product', $product);
