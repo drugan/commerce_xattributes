@@ -7,6 +7,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Plugin\Field\FieldWidget\ProductVariationTitleWidget;
+use Drupal\commerce_order\Entity\OrderItemInterface;
 
 /**
  * Overrides the 'commerce_product_variation_title' widget.
@@ -40,7 +41,18 @@ class CorrectProductVariationTitleWidget extends ProductVariationTitleWidget {
     ];
 
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    $product = $form_state->get('product');
+    if (!($product = $form_state->get('product'))
+      || !isset($form['#entity'])
+      || !($form['#entity'] instanceof OrderItemInterface)
+      || !($purchased_entity = $form['#entity']->getPurchasedEntity())
+      || !($product = $purchased_entity->getProduct())
+    ) {
+      return;
+    }
+    else {
+      $form_state->set('product', $product);
+    }
+
     $variations = $this->loadEnabledVariations($product);
     if (count($variations) === 0) {
       // Nothing to purchase, tell the parent form to hide itself.

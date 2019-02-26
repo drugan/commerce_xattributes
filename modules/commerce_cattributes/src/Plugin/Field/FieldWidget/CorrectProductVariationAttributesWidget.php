@@ -139,13 +139,16 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
     ];
 
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    if (!($product = $form_state->get('product')) && isset($form['#entity']) && $form['#entity'] instanceof OrderItemInterface) {
-      if (($purchased_entity = $form['#entity']->getPurchasedEntity())) {
-        if (!$product = $purchased_entity->getProduct()) {
-          return;
-        }
-        $form_state->set('product', $product);
-      }
+    if (!($product = $form_state->get('product'))
+      || !isset($form['#entity'])
+      || !($form['#entity'] instanceof OrderItemInterface)
+      || !($purchased_entity = $form['#entity']->getPurchasedEntity())
+      || !($product = $purchased_entity->getProduct())
+    ) {
+      return;
+    }
+    else {
+      $form_state->set('product', $product);
     }
     $variations = $this->loadEnabledVariations($product);
     if (count($variations) === 0) {
