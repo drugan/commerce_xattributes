@@ -270,6 +270,7 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
 
     foreach ($values as &$value) {
       $selected_variation = $this->selectVariationFromUserInput($variations, $value + $all);
+      $form_state->set('selected_variation', $selected_variation->id());
       $trigger && $form_state->setValue('selected_variation', $selected_variation);
       $value['variation'] = $selected_variation->id();
     }

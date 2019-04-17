@@ -112,4 +112,18 @@ class CorrectProductVariationTitleWidget extends ProductVariationTitleWidget {
     return $element;
   }
 
+
+  /**
+   * {@inheritdoc}
+   */
+  public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+    $return = parent::massageFormValues($values, $form, $form_state);
+    $value = reset($values);
+    if (!empty($value['target_id'])) {
+      $form_state->set('selected_variation', $value['target_id']);
+    }
+
+    return $return;
+  }
+
 }
