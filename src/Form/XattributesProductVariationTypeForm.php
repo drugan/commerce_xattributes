@@ -41,10 +41,10 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
 
       if (isset($attribute_field[$id])) {
         // Link referenced attribute field label to the field edit page.
-        $label = $this->t('<a href=":href" target="_blank">%label</a> <mark>%required</mark>', [
+        $label = $this->t('<a href=":href" target="_blank" @required>%label</a>', [
           '%label' => $definitions[$attribute_field[$id]]->label(),
           ':href' => $path . $definitions[$attribute_field[$id]]->id(),
-          '%required' => $definitions[$attribute_field[$id]]->isRequired() ? '*' : '',
+          '@required' => $definitions[$attribute_field[$id]]->isRequired() ? 'class=form-required' : '',
         ]);
 
         return $label . ' => ' . $this->t('<a href=":href" target="_blank">@id</a>', [
