@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\commerce_product\Plugin\Field\FieldWidget\ProductVariationWidgetBase;
 use Drupal\commerce_cart\CartManagerInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 
 /**
  * Overrides the 'commerce_product_variation_attributes' widget.
@@ -70,6 +71,13 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
   protected $attributeStorage;
 
   /**
+   * The entity display repository.
+   *
+   * @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface
+   */
+  protected $entityDisplayRepository;
+
+  /**
    * Constructs a new ProductVariationAttributesWidget object.
    *
    * @param \Drupal\commerce_bulk\BulkVariationsCreatorInterface $creator
@@ -92,14 +100,17 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
    *   The attribute field manager.
    * @param \Drupal\commerce_cart\CartManagerInterface $cart_manager
    *   The cort manager.
+   * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
+   *   The entity display repository.
    */
-  public function __construct(BulkVariationsCreatorInterface $creator, $plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, ProductAttributeFieldManagerInterface $attribute_field_manager, CartManagerInterface $cart_manager) {
+  public function __construct(BulkVariationsCreatorInterface $creator, $plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, ProductAttributeFieldManagerInterface $attribute_field_manager, CartManagerInterface $cart_manager, EntityDisplayRepositoryInterface $entity_display_repository) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $entity_type_manager, $entity_repository);
 
     $this->attributeFieldManager = $attribute_field_manager;
     $this->attributeStorage = $entity_type_manager->getStorage('commerce_product_attribute');
     $this->creator = $creator;
     $this->cartManager = $cart_manager;
+    $this->entityDisplayRepository = $entity_display_repository;
   }
 
   /**
@@ -116,7 +127,8 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
       $container->get('entity_type.manager'),
       $container->get('entity.repository'),
       $container->get('commerce_product.attribute_field_manager'),
-      $container->get('commerce_cart.cart_manager')
+      $container->get('commerce_cart.cart_manager'),
+      $container->get('entity_display.repository')
     );
   }
 
@@ -395,14 +407,14 @@ class CorrectProductVariationAttributesWidget extends ProductVariationWidgetBase
     $settings['reorder_labels'] = TRUE;
     $order_item = $this->cartManager->createOrderItem($selected_variation);
     // "Correct product variation attributes" widget settings.
-    $form_display = entity_get_form_display($order_item->getEntityTypeId(), $order_item->bundle(), 'add_to_cart');
+    $form_display = $this->entityDisplayRepository->getFormDisplay($order_item->getEntityTypeId(), $order_item->bundle(), 'add_to_cart');
     if (($purchased_entity = $form_display->getComponent('purchased_entity')) && !empty($purchased_entity['settings']['skip_option_label'])) {
       $settings = $purchased_entity['settings'] + $settings;
     }
     // Try to fetch "Correct attributes default" widget settings from the
     // variation type's order item default form display mode.
     // TODO: remove this after a while.
-    elseif (($form_display = entity_get_form_display($order_item->getEntityTypeId(), $order_item->bundle(), 'default')) && ($purchased_entity = $form_display->getComponent('purchased_entity')) && !empty($purchased_entity['settings'])) {
+    elseif (($form_display = $this->entityDisplayRepository->getFormDisplay($order_item->getEntityTypeId(), $order_item->bundle(), 'default')) && ($purchased_entity = $form_display->getComponent('purchased_entity')) && !empty($purchased_entity['settings'])) {
       $settings = $purchased_entity['settings'] + $settings;
     }
     // The id of an empty option.

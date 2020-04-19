@@ -27,7 +27,7 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
       $used_attributes = array_column($attribute_map, 'attribute_id');
       if (!empty($used_attributes)) {
         $attribute_field = array_combine($used_attributes, array_column($attribute_map, 'field_name'));
-        $path = "{$variation_type->url()}/fields/";
+        $path = "{$variation_type->toUrl()->toString()}/fields/";
         $definitions = $this->attributeFieldManager->getFieldDefinitions($variation_type->id());
       }
     }
@@ -36,7 +36,7 @@ class XattributesProductVariationTypeForm extends ProductVariationTypeForm {
     $attributes_options = array_map(function ($attribute) use ($path, $attribute_field, $definitions) {
        /** @var \Drupal\commerce_product\Entity\ProductAttributeInterface $attribute */
       $id = $attribute->id();
-      $url = $attribute->url();
+      $url = $attribute->toUrl()->toString();
       $label = $attribute->label();
 
       if (isset($attribute_field[$id]) && isset($definitions[$attribute_field[$id]])) {
