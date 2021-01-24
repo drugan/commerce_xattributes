@@ -1,7 +1,7 @@
 name: 'Commerce Correct Attributes'
 type: module
 description: 'Helps to correctly display attributes on an "Add to cart" form. Introduces "No, thanks!" refuse option for optional attributes.'
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 package: Commerce (contrib)
 dependencies:
   - drupal:commerce_xattributes
